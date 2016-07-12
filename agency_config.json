@@ -1,0 +1,66 @@
+{
+  "agencies": [
+    {
+      "id": 1,
+      "name": "Agency A",
+      "address": "Greenfield 101",
+      "trips": [
+        {
+          "name": "Bratislava",
+          "region": "Europe",
+          "distance": 1200,
+          "price": 1200,
+          "persons": 1200,
+          "days": 4
+        },
+        {
+          "name": "Prague",
+          "region": "Europe",
+          "distance": 1200,
+          "price": 1200,
+          "persons": 2,
+          "days": 4
+        },
+        {
+          "name": "Tokyo",
+          "region": "Asia",
+          "distance": 12000,
+          "price": 15000,
+          "persons": 1,
+          "days": 14
+        },
+        {
+          "name": "Melbourne",
+          "region": "Australia",
+          "distance": 1200,
+          "price": 1200,
+          "persons": 1200,
+          "days": 4
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Agency B",
+      "address": "Greenfield 102",
+      "trips": [
+        {
+          "name": "Sarajevo",
+          "region": "Europe",
+          "distance": 1200,
+          "price": 800,
+          "persons": 1200,
+          "days": 2
+        },
+        {
+          "name": "Belgrade",
+          "region": "Europe",
+          "distance": 1200,
+          "price": 1200,
+          "persons": 1200,
+          "days": 4
+        }
+      ]
+    }
+  ]
+}
