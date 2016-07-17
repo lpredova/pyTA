@@ -2,13 +2,15 @@
 # !/usr/bin/env python
 import json
 import sys
+import time
+from threading import Thread
 
 import spade
 from spade.ACLMessage import ACLMessage
-from spade.Agent import Agent, os
-from spade.Behaviour import ACLTemplate, Behaviour
+from spade.Agent import Agent
+from spade.Behaviour import Behaviour
 
-os.path.dirname(os.path.realpath(__file__))
+from configuration_reader import ConfigurationReader
 
 
 class AgencyAgent(Agent):
@@ -20,14 +22,11 @@ class AgencyAgent(Agent):
 
             if self.msg:
                 request = json.loads(self.msg.content)
-                if request['request_type'] == 'games':
-                    self.send_message(json.dumps({'request_type': 'games', 'data': bookie.get_games()}))
+                if request['request_type'] == 'travel_request':
+                    print "IMAM PONUDU OD"
+                    print self.msg.content
 
-                if request['request_type'] == 'bet':
-                    self.send_message(json.dumps({'request_type': 'game_evaluation', 'data': data}))
-
-                if request['request_type'] == 'team_selection':
-                    self.send_message(json.dumps({'request_type': 'game_evaluation', 'data': data}))
+                    # self.send_message(json.dumps({'request_type': 'games', 'data': None}))
 
                 else:
                     pass
@@ -54,17 +53,38 @@ class AgencyAgent(Agent):
             print "\nMessage sent to: %s !" % client
 
     def _setup(self):
-        print "\n Travel agency\t" + self.getAID().getName() + " is up"
+        print "\nTravel agency\t%s\tis up" % self.getAID().getAddresses()
 
-        template = ACLTemplate()
-        template.setOntology('booking')
+        # template = ACLTemplate()
+        # template.setOntology('booking')
 
-        behaviour = spade.Behaviour.MessageTemplate(template)
-        self.addBehaviour(self.MakingOffer(), behaviour)
+        # behaviour = spade.Behaviour.MessageTemplate(template)
+        # self.addBehaviour(self.MakingOffer(), behaviour)
+
+
+def start_agency(agency_address):
+    print "Starting agent"
+    try:
+        print "start"
+        AgencyAgent(agency_address, 'travel').start()
+        print "end"
+        return None
+    except Exception, e:
+        print e
 
 
 if __name__ == "__main__":
-    # read config file and start agents in separate threads
 
-    mba = AgencyAgent('agency@127.0.0.1', 'travel')
-    mba.start()
+    # read config file and start agents in separate threads
+    agencies_addresses = ConfigurationReader.read_agency_addresses()
+
+    for agency_address in agencies_addresses:
+        print agencies_addresses
+        try:
+            thread = Thread(target=start_agency(agency_address), args=agency_address)
+            thread.daemon = True
+            thread.start()
+            time.sleep(2)
+        except Exception, e:
+            print "\nError while starting agencies!"
+            print e.message

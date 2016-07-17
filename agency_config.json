@@ -4,6 +4,7 @@
       "id": 1,
       "name": "Agency A",
       "address": "Greenfield 101",
+      "ip": "agency@127.0.0.1",
       "trips": [
         {
           "name": "Bratislava",
@@ -43,6 +44,7 @@
       "id": 1,
       "name": "Agency B",
       "address": "Greenfield 102",
+      "ip": "agency@127.0.0.2",
       "trips": [
         {
           "name": "Sarajevo",
