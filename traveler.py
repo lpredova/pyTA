@@ -17,28 +17,45 @@ class TravelerAgent(Agent):
         config_file = BASE_DIR + 'agency_config.json'
 
         msg = None
-        destination = random.choice(
-            ['Europe', 'Russia', 'Asia', 'Africa', 'America', 'Middle East', 'Dubai', 'Australia'])
+        agencies_counter = ConfigurationReader.number_of_agencies()
+        offer_responses = 0
+        offers = []
+
+        destination = random.choice(['Europe', 'Australia', 'Asia', 'America'])
 
         def _process(self):
             self.msg = self._receive(True)
             if self.msg:
                 request = json.loads(self.msg.content)
-                if request['request_type'] == 'games':
-                    self.games = request['data']
-                if request['request_type'] == 'game_evaluation':
-                    self.games = request['data']
+                if request['request_type'] == 'offer_response':
+
+                    self.offer_responses += 1
+                    self.offers.append(request)
+
+                    if self.offer_responses >= self.agencies_counter:
+                        # TODO check num of persons and which is in budget then send it request for discount
+                        for offer in self.offers:
+                            for o in offer["data"]:
+                                print o["name"]
+
+                                travel = {'request_type': 'discount_request', 'travel_id': o["name"]}
+                                self.send_message(json.dumps(travel), offer["origin"])
+
+                if request['request_type'] == 'discount_response':
+                    print "OK NEMA POPUSTA"
 
         def set_preferences(self):
             print "Hmmm, I'd like to go to: %s" % self.destination
             travel = {'request_type': 'travel_request', 'destination': self.destination}
-            self.send_message(json.dumps(travel))
+            self.send_message_all(json.dumps(travel))
 
-        def send_message(self, content):
+        def send_message_all(self, content):
 
-            agencies_addresses = ConfigurationReader.read_agency_addresses()
-            for address in agencies_addresses:
+            agencies_ids = ConfigurationReader.read_agency_id()
+            for agency_id in agencies_ids:
+                address = "agency%i@127.0.0.1" % agency_id
                 agent = spade.AID.aid(name=address, addresses=["xmpp://%s" % address])
+
                 self.msg = ACLMessage()
                 self.msg.setPerformative("inform")
                 self.msg.setOntology("travel")
@@ -47,6 +64,18 @@ class TravelerAgent(Agent):
                 self.msg.setContent(content)
                 self.myAgent.send(self.msg)
                 print 'Message %s sent to %s' % (content, address)
+
+        def send_message(self, content, address):
+
+            agent = spade.AID.aid(name=address, addresses=["xmpp://%s" % address])
+            self.msg = ACLMessage()
+            self.msg.setPerformative("inform")
+            self.msg.setOntology("travel")
+            self.msg.setLanguage("eng")
+            self.msg.addReceiver(agent)
+            self.msg.setContent(content)
+            self.myAgent.send(self.msg)
+            print 'Message %s sent to %s' % (content, address)
 
     def _setup(self):
         print "\n Agent\t" + self.getAID().getName() + " is up"
@@ -57,16 +86,12 @@ class TravelerAgent(Agent):
         mt = MessageTemplate(feedback_template)
         settings = self.Travel()
         self.addBehaviour(settings, mt)
-
-        '''
-        Agent feels like going somewhere (i.e Asia,Russia) and asks agencies to make an offer
-        Ask for initial offer, then select based on current MOOD(price,distance)... and ask for discount, if right then accept offer and say tnx to other agencies
-        '''
-
-        # settings.send_message(json.dumps({'request_type': 'games'}))
         settings.set_preferences()
 
 
 if __name__ == '__main__':
-    p = TravelerAgent('traveler@127.0.0.1', 'traveler')
-    p.start()
+    '''
+        Agent feels like going somewhere (i.e Asia,Russia) and asks agencies to make an offer
+        Ask for initial offer, then select based on current MOOD(price,distance)... and ask for discount, if right then accept offer and say tnx to other agencies
+        '''
+    TravelerAgent('traveler@127.0.0.1', 'traveler').start()

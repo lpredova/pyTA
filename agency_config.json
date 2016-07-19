@@ -4,8 +4,8 @@
       "id": 1,
       "name": "Agency A",
       "address": "Greenfield 101",
-      "ip": "agency@127.0.0.1",
-      "trips": [
+      "ip": "agency1@127.0.0.1 MakingOffer",
+      "destinations": [
         {
           "name": "Bratislava",
           "region": "Europe",
@@ -37,15 +37,23 @@
           "price": 1200,
           "persons": 1200,
           "days": 4
+        },
+        {
+          "name": "San Francisco",
+          "region": "America",
+          "distance": 1200,
+          "price": 1200,
+          "persons": 1200,
+          "days": 4
         }
       ]
     },
     {
-      "id": 1,
+      "id": 2,
       "name": "Agency B",
       "address": "Greenfield 102",
-      "ip": "agency@127.0.0.2",
-      "trips": [
+      "ip": "agency2@127.0.0.1 MakingOffer",
+      "destinations": [
         {
           "name": "Sarajevo",
           "region": "Europe",
