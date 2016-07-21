@@ -16,6 +16,7 @@ from configuration_reader import ConfigurationReader
 class AgencyAgent(Agent):
     class MakingOffer(Behaviour):
         msg = None
+        destination = None
 
         def _process(self):
             self.msg = self._receive(True)
@@ -24,22 +25,55 @@ class AgencyAgent(Agent):
                 request = json.loads(self.msg.content)
                 if request['request_type'] == 'travel_request':
                     results = ConfigurationReader.destination_finder(request['destination'], self.getName())
-                    print results
-                    print self.getName()
-                    print "Agency %s has %i travels to offer" % (self.getName(), len(results))
+                    print "%s has %i travels to offer" % (self.getName(), len(results))
                     if len(results) > 0:
                         for result in results:
                             print "%s - %i$ : %i persons, %i days" % (
                                 result["name"], result["price"], result["persons"], result["days"])
+                            self.destination = result["name"]
                     else:
-                        print "There are no destinations to desired location"
+                        print "There are no destinations to desired location\n"
 
                     self.send_message(json.dumps(
                         {'request_type': 'offer_response', 'data': results, 'origin': self.getName().split(" ")[0]}))
 
+                # calculate if discount is applicable
                 if request['request_type'] == 'discount_request':
-                    self.send_message(json.dumps({'request_type': 'discount_response', 'data': "NO DISCOUNT",
-                                                  'origin': self.getName().split(" ")[0]}))
+                    results = ConfigurationReader.discount_finder(request['travel_id'], self.getName())
+                    if len(results) > 0:
+                        for result in results:
+                            if result["name"] == request['travel_id']:
+                                if result["discount"]:
+                                    print "OK, you got yourselves a discount %s for %s" % (
+                                        result["discounted"], result["name"])
+
+                                    self.send_message(json.dumps(
+                                        {'request_type': 'discount_response', 'discount_accepted': True,
+                                         'discount_amount': result["discounted"],
+                                         'location': result["name"],
+                                         'origin': self.getName().split(" ")[0]}))
+
+                                else:
+                                    print "Sorry no discount.\n"
+                                    self.send_message(json.dumps(
+                                        {'request_type': 'discount_response', 'discount_accepted': False,
+                                         'discount_amount': None,
+                                         'origin': self.getName().split(" ")[0]}))
+
+                    else:
+                        print "Sorry no discount for %s.\n" % request['travel_id']
+                        self.send_message(json.dumps(
+                            {'request_type': 'discount_response', 'discount_accepted': False, 'discount_ammount': None,
+                             'origin': self.getName().split(" ")[0]}))
+
+                if request['request_type'] == 'make_booking':
+                    print "GREAT! your booking has been made. Have a safe trip\n\n"
+                    self.send_message(
+                        json.dumps({'request_type': 'booking_confirmed', 'destination': self.destination}))
+                    self.kill()
+
+                if request['request_type'] == 'not_found':
+                    print "Sorry! Thats all we can offer\n"
 
                 else:
                     pass
@@ -62,7 +96,7 @@ class AgencyAgent(Agent):
             self.msg.setContent(message)
 
             self.myAgent.send(self.msg)
-            print "\nMessage sent to: %s !" % client
+            # print "\nMessage sent to: %s !" % client
 
     def _setup(self):
         print "\nTravel agency\t%s\tis up" % self.getAID().getAddresses()

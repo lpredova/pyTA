@@ -60,3 +60,20 @@ class ConfigurationReader:
 
             except Exception, e:
                 print e.message
+
+    @staticmethod
+    def discount_finder(prefered_location, name):
+        if os.path.isfile(ConfigurationReader.config_file):
+            destinations = []
+            try:
+                with open(ConfigurationReader.config_file) as data_file:
+                    data = json.load(data_file)
+                    for agency in data['agencies']:
+                        if agency["ip"] == name:
+                            for destination in agency['destinations']:
+                                if prefered_location == destination['name']:
+                                    destinations.append(destination)
+                return destinations
+
+            except Exception, e:
+                print e.message

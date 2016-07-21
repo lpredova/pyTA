@@ -11,13 +11,17 @@
           "region": "Europe",
           "distance": 1200,
           "price": 1200,
-          "persons": 1200,
+          "persons": 7,
+          "discount": false,
+          "discounted": 1200,
           "days": 4
         },
         {
           "name": "Prague",
           "region": "Europe",
           "distance": 1200,
+          "discount": true,
+          "discounted": 1100,
           "price": 1200,
           "persons": 2,
           "days": 4
@@ -27,6 +31,8 @@
           "region": "Asia",
           "distance": 12000,
           "price": 15000,
+          "discount": true,
+          "discounted": 12000,
           "persons": 1,
           "days": 14
         },
@@ -35,7 +41,9 @@
           "region": "Australia",
           "distance": 1200,
           "price": 1200,
-          "persons": 1200,
+          "discount": false,
+          "discounted": 1200,
+          "persons": 3,
           "days": 4
         },
         {
@@ -43,7 +51,9 @@
           "region": "America",
           "distance": 1200,
           "price": 1200,
-          "persons": 1200,
+          "discount": true,
+          "discounted": 1000,
+          "persons": 8,
           "days": 4
         }
       ]
@@ -59,15 +69,19 @@
           "region": "Europe",
           "distance": 1200,
           "price": 800,
-          "persons": 1200,
+          "discount": true,
+          "discounted": 600,
+          "persons": 9,
           "days": 2
         },
         {
           "name": "Belgrade",
           "region": "Europe",
           "distance": 1200,
+          "discount": false,
+          "discounted": 1200,
           "price": 1200,
-          "persons": 1200,
+          "persons": 7,
           "days": 4
         }
       ]
